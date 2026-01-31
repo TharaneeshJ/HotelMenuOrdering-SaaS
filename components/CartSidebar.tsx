@@ -105,19 +105,6 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({
           </div>
         </div>
 
-        {/* Coupon Section (Disabled) */}
-        <div className="mb-6">
-          <div className="flex gap-2">
-            <input 
-              type="text" 
-              placeholder="Apply Coupon" 
-              className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
-              disabled
-            />
-            <button className="text-brand-accent font-semibold text-sm px-2" disabled>Apply</button>
-          </div>
-        </div>
-
         {/* Bill Details */}
         <div className="space-y-2 border-t border-gray-100 pt-4 mb-6">
           <div className="flex justify-between text-sm text-gray-600">

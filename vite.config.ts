@@ -13,8 +13,6 @@ export default defineConfig(({ mode }) => {
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'import.meta.env.VITE_WEBHOOK_URL': JSON.stringify(env.VITE_WEBHOOK_URL || 'http://localhost:5678/webhook/place-order'),
-        'import.meta.env.VITE_STRIPE_ENDPOINT': JSON.stringify(env.VITE_STRIPE_ENDPOINT || 'http://localhost:3001/create-checkout-session'),
       },
       resolve: {
         alias: {

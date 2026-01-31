@@ -167,10 +167,10 @@ const App: React.FC = () => {
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-40 px-4 py-3 shadow-sm">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
           
-          {/* Logo & Table Select */}
-          <div className="flex items-center justify-between w-full md:w-auto gap-4">
-            <div className="flex items-center gap-2" onClick={() => setShowKitchen(true)} style={{ cursor: 'pointer' }}>
-               <div className="w-10 h-10 bg-brand-primary rounded-lg flex items-center justify-center text-xl font-bold text-white shrink-0">AH</div>
+            {/* Logo & Table Select */}
+            <div className="flex items-center justify-between w-full md:w-auto gap-4">
+              <div className="flex items-center gap-2">
+                 <div className="w-10 h-10 bg-brand-primary rounded-lg flex items-center justify-center text-xl font-bold text-white shrink-0">AH</div>
                <div className="shrink-0">
                  <h1 className="text-lg font-bold leading-none">Amman</h1>
                  <span className="text-xs text-brand-accent font-medium">Hotel</span>
@@ -226,15 +226,11 @@ const App: React.FC = () => {
                    Tasty Deals <br/> <span className="text-white">Up to 20% Off!</span>
                  </h2>
                  <p className="text-brand-dark/80 mb-4 md:mb-6 text-sm md:text-base font-medium">Enjoy our special Parottas and Spicy Curries.</p>
-                 <button onClick={() => window.scrollTo({ top: 500, behavior: 'smooth' })} className="bg-brand-dark text-white px-6 py-2 md:px-8 md:py-3 rounded-xl text-sm md:text-base font-bold hover:bg-black transition-colors">
-                   Order Now
-                 </button>
-               </div>
-               
-               {/* Decorative Circles */}
-               <div className="absolute -right-10 -bottom-20 w-48 h-48 md:w-64 md:h-64 bg-white/20 rounded-full blur-2xl"></div>
-               <div className="absolute right-10 md:right-20 top-10 w-20 h-20 md:w-32 md:h-32 bg-brand-primary/20 rounded-full blur-xl"></div>
-            </div>
+                   <button onClick={() => window.scrollTo({ top: 500, behavior: 'smooth' })} className="bg-brand-dark text-white px-6 py-2 md:px-8 md:py-3 rounded-xl text-sm md:text-base font-bold hover:bg-black transition-colors">
+                     Order Now
+                   </button>
+                 </div>
+              </div>
 
             {/* Error Message */}
             {error && (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { KitchenOrder, OrderStatus } from '../types';
 import { KitchenOrderCard } from './KitchenOrderCard';
 import { getKitchenOrders, updateOrderStatus } from '../services/orderService';
-import { API_CONFIG } from '../config';
+import { API_CONFIG, API_ENDPOINTS } from '../config';
 
 interface StatusColumn {
   status: OrderStatus;
@@ -185,9 +185,9 @@ export const KitchenDashboard: React.FC = () => {
               <path fillRule="evenodd" d="M18 5v14a2 2 0 01-2 2H4a2 2 0 01-2-2V5a1 1 0 011-1h2a1 1 0 00-.894.553H7a9 9 0 018 0h.894A1 1 0 0117 4h2a1 1 0 011 1zm-5-1H7v1h6V4z" clipRule="evenodd" />
             </svg>
             <div>
-              <p className="text-sm font-medium text-red-800">{error}</p>
-              <p className="text-xs text-red-600 mt-1">Check if n8n webhook is running at http://localhost:5678</p>
-            </div>
+                <p className="text-sm font-medium text-red-800">{error}</p>
+                <p className="text-xs text-red-600 mt-1">Check if n8n webhook is running at {API_ENDPOINTS.GET_ORDERS}</p>
+              </div>
           </div>
         )}
       </header>

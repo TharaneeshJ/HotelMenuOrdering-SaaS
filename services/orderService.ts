@@ -46,22 +46,26 @@ export const submitOrder = async (payload: OrderPayload): Promise<OrderResponse>
     }
 
     const text = await response.text();
-    let data: N8nPlaceOrderResponse;
+    let data: any;
     
     try {
-      data = text ? JSON.parse(text) : { success: true, order_id: `ORD-${Date.now().toString().slice(-6)}` };
+      data = text ? JSON.parse(text) : { success: true };
     } catch (e) {
       console.warn('[orderService] Failed to parse JSON response, using fallback:', text);
-      data = { success: true, order_id: `ORD-${Date.now().toString().slice(-6)}` };
+      data = { success: true };
     }
 
-    if (!data.success || !data.order_id) {
-      throw new Error('Invalid response from server');
+    // Be flexible with n8n response format
+    const isSuccess = data.success !== false; // true unless explicitly false
+    const orderId = data.order_id || `ORD-${Date.now().toString().slice(-6)}`;
+
+    if (!isSuccess) {
+      throw new Error(data.message || 'Server returned an error');
     }
 
     const orderResponse: OrderResponse = {
       success: true,
-      order_id: data.order_id,
+      order_id: String(orderId),
       table: payload.table,
       items: payload.items.map(item => `${item.name} x${item.qty}`).join(', '),
       subtotal,
@@ -105,29 +109,44 @@ export const getKitchenOrders = async (): Promise<KitchenOrder[]> => {
     }
 
     const text = await response.text();
-    let data: N8nGetOrdersResponse;
+    let rawData: any;
 
     try {
-      data = text ? JSON.parse(text) : { success: true, orders: [] };
+      rawData = text ? JSON.parse(text) : [];
     } catch (e) {
       console.warn('[orderService] Failed to parse JSON response for getKitchenOrders:', text);
-      data = { success: true, orders: [] };
+      rawData = [];
     }
 
-    if (!data.success || !Array.isArray(data.orders)) {
-      throw new Error('Invalid response format');
+    // Normalize data structure
+    let orderList: any[] = [];
+    
+    if (Array.isArray(rawData)) {
+      orderList = rawData;
+    } else if (rawData && typeof rawData === 'object') {
+      if (Array.isArray(rawData.orders)) {
+        orderList = rawData.orders;
+      } else if (rawData.order_id) {
+        // Single order object
+        orderList = [rawData];
+      }
+    }
+
+    if (orderList.length === 0 && text && !text.includes('[]') && !text.includes('orders')) {
+      console.warn('[orderService] No orders found in response, but response was not empty:', text);
     }
 
     // Convert n8n response to KitchenOrder format
     // Sort by newest first
-    const orders: KitchenOrder[] = data.orders
+    const orders: KitchenOrder[] = orderList
+      .filter(order => order && order.order_id) // Ensure it's a valid order object
       .map(order => ({
-        order_id: order.order_id,
-        table: order.table,
-        items: order.items, // Already formatted as string from n8n
-        total: order.total,
-        status: order.status as OrderStatus,
-        created_at: order.created_at,
+        order_id: String(order.order_id),
+        table: String(order.table || 'N/A'),
+        items: String(order.items || ''),
+        total: Number(order.total || 0),
+        status: (order.status as OrderStatus) || 'PENDING',
+        created_at: order.created_at || new Date().toISOString(),
       }))
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
@@ -172,7 +191,7 @@ export const updateOrderStatus = async (orderId: string, newStatus: OrderStatus)
     }
 
     const text = await response.text();
-    let data: N8nUpdateStatusResponse;
+    let data: any;
 
     try {
       data = text ? JSON.parse(text) : { success: true };
@@ -181,7 +200,10 @@ export const updateOrderStatus = async (orderId: string, newStatus: OrderStatus)
       data = { success: true };
     }
 
-    if (!data.success) {
+    // Be flexible with n8n response format
+    const isSuccess = data.success !== false; // true unless explicitly false
+
+    if (!isSuccess) {
       throw new Error(data.message || 'Failed to update status');
     }
 

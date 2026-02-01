@@ -86,6 +86,9 @@ export const KitchenDashboard: React.FC = () => {
   const getOrdersByStatus = (status: OrderStatus) =>
     orders.filter(o => o.status === status);
 
+  const servedOrders = getOrdersByStatus('SERVED');
+  const activeOrdersCount = orders.length - servedOrders.length;
+
   const Column: React.FC<{ col: StatusColumn }> = ({ col }) => {
     const columnOrders = getOrdersByStatus(col.status);
     const count = columnOrders.length;
@@ -193,11 +196,41 @@ export const KitchenDashboard: React.FC = () => {
       </header>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 min-h-[calc(100vh-250px)]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         {STATUS_COLUMNS.map(col => (
           <Column key={col.status} col={col} />
         ))}
       </div>
+
+      {/* Recently Served Section */}
+      {servedOrders.length > 0 && (
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-gray-700">Recently Served</h2>
+            </div>
+            <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full font-bold">
+              {servedOrders.length}
+            </span>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 opacity-75">
+            {servedOrders.slice(0, 8).map(order => (
+              <KitchenOrderCard
+                key={order.order_id}
+                order={order}
+                onStatusUpdate={handleStatusUpdate}
+                isUpdating={updatingIds.has(order.order_id)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

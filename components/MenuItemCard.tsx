@@ -1,6 +1,5 @@
 import React from 'react';
 import { MenuItem } from '../types';
-import { Button } from './Button';
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -9,7 +8,6 @@ interface MenuItemCardProps {
   onDecrement: (item: MenuItem) => void;
 }
 
-// Helper to get emoji based on category (Simple mapping)
 const getCategoryIcon = (category: string) => {
   if (category.includes('Ice Cream') || category.includes('Shake')) return '🥤';
   if (category.includes('Falooda')) return '🍧';
@@ -24,65 +22,69 @@ const getCategoryIcon = (category: string) => {
   return '🥘';
 };
 
-export const MenuItemCard: React.FC<MenuItemCardProps> = ({ 
-  item, 
-  quantity, 
-  onIncrement, 
-  onDecrement 
+export const MenuItemCard: React.FC<MenuItemCardProps> = ({
+  item,
+  quantity,
+  onIncrement,
+  onDecrement
 }) => {
-  
-  const handleAdd = () => onIncrement(item);
-  const handleRemove = () => onDecrement(item);
   const icon = getCategoryIcon(item.category);
 
   return (
-    <div className="bg-white p-3 md:p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex flex-col h-full relative group">
-      
-      {/* Image Placeholder */}
-      <div className="h-28 md:h-32 w-full bg-brand-light rounded-xl mb-3 md:mb-4 flex items-center justify-center text-4xl md:text-5xl transform group-hover:scale-105 transition-transform duration-300">
-        {icon}
-      </div>
+    <div className="bg-[#fcfbf9] rounded-xl border border-[#e7e5e4] p-5 flex flex-col h-full hover:border-[#a8a29e] transition-all duration-300 group relative shadow-sm hover:shadow-lg hover:-translate-y-1">
 
-      <div className="flex-1 min-h-[4rem]">
-        <p className="text-[10px] md:text-xs text-brand-accent font-medium mb-1 truncate">{item.category}</p>
-        <h3 className="font-bold text-gray-800 text-base md:text-lg leading-tight mb-1 line-clamp-2">{item.name}</h3>
-        <p className="text-gray-400 text-[10px] md:text-xs mb-2 md:mb-3 hidden md:block">Delicious & Authentic</p>
-      </div>
-      
-      <div className="flex items-end justify-between mt-auto pt-3 border-t border-gray-50 gap-2">
-        <div className="flex flex-col">
-          <span className="text-[10px] md:text-xs text-gray-400 line-through">₹{item.price + 20}</span>
-          <span className="font-bold text-base md:text-lg text-brand-dark leading-none">₹{item.price}</span>
-        </div>
-        
-        {quantity === 0 ? (
-          <Button 
-            onClick={handleAdd} 
-            variant="outline" 
-            size="sm"
-            className="!px-4 md:!px-6 !py-1.5 h-8 md:h-9 text-xs md:text-sm"
-          >
-            Add
-          </Button>
-        ) : (
-          <div className="flex items-center bg-brand-primary rounded-lg p-0.5 h-8 md:h-9">
-            <button 
-              onClick={handleRemove}
-              className="w-6 md:w-7 h-full flex items-center justify-center bg-white text-brand-dark rounded-md hover:bg-gray-100 transition-colors font-bold text-base md:text-lg leading-none pb-0.5"
-            >
-              -
-            </button>
-            <span className="w-6 md:w-8 text-center font-bold text-white text-xs md:text-sm leading-none flex items-center justify-center">
-              {quantity}
-            </span>
-            <button 
-              onClick={handleAdd}
-              className="w-6 md:w-7 h-full flex items-center justify-center bg-white text-brand-dark rounded-md hover:bg-gray-100 transition-colors font-bold text-base md:text-lg leading-none pb-0.5"
-            >
-              +
-            </button>
+      {/* Icon Area - Elegant & Minimal */}
+      <div className="h-40 w-full bg-[#f5f5f4] rounded-lg flex items-center justify-center mb-5 transition-colors group-hover:bg-[#e7e5e4] duration-300 overflow-hidden relative">
+        <span className="text-5xl transform transition-transform duration-500 group-hover:scale-110 drop-shadow-md select-none">{icon}</span>
+
+        {quantity > 0 && (
+          <div className="absolute top-3 right-3 bg-brand-primary text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md tracking-wide">
+            {quantity} IN CART
           </div>
         )}
+      </div>
+
+      <div className="flex-1 flex flex-col">
+        <div className="flex justify-between items-start mb-2">
+          <p className="text-[10px] uppercase tracking-widest font-bold text-[#a8a29e]">{item.category}</p>
+          {item.category.includes('Special') && <span className="w-1.5 h-1.5 rounded-full bg-brand-accent"></span>}
+        </div>
+
+        <h3 className="font-serif text-xl font-medium text-[#1c1917] mb-3 leading-snug tracking-tight group-hover:text-brand-primary transition-colors">{item.name}</h3>
+
+        <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#f5f5f4]">
+          <div className="flex flex-col">
+            <span className="text-[10px] text-[#a8a29e] uppercase font-bold tracking-wider mb-0.5">Price</span>
+            <span className="font-serif font-bold text-[#1c1917] text-xl">₹{item.price}</span>
+          </div>
+
+          {quantity === 0 ? (
+            <button
+              onClick={() => onIncrement(item)}
+              className="px-6 py-2.5 bg-white border border-[#e7e5e4] text-[#1c1917] text-xs font-bold uppercase tracking-widest rounded-lg transition-all active:scale-95 hover:bg-[#1c1917] hover:text-white hover:border-[#1c1917] shadow-sm"
+            >
+              Add
+            </button>
+          ) : (
+            <div className="flex items-center gap-1 bg-white border border-[#e7e5e4] rounded-lg p-1 shadow-sm">
+              <button
+                onClick={() => onDecrement(item)}
+                className="w-8 h-8 flex items-center justify-center text-[#1c1917] hover:bg-gray-100 rounded transition-colors"
+              >
+                <span className="text-lg mb-1">−</span>
+              </button>
+              <span className="text-sm font-bold text-[#1c1917] w-6 text-center tabular-nums">
+                {quantity}
+              </span>
+              <button
+                onClick={() => onIncrement(item)}
+                className="w-8 h-8 flex items-center justify-center text-[#1c1917] hover:bg-gray-100 rounded transition-colors"
+              >
+                <span className="text-lg mb-1">+</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -7,13 +7,12 @@ import { API_CONFIG, API_ENDPOINTS } from '../config';
 interface StatusColumn {
   status: OrderStatus;
   title: string;
-  color: string;
 }
 
 const STATUS_COLUMNS: StatusColumn[] = [
-  { status: 'PENDING', title: 'New Orders', color: 'from-red-50 to-red-50' },
-  { status: 'COOKING', title: 'In Kitchen', color: 'from-amber-50 to-amber-50' },
-  { status: 'READY', title: 'Ready to Serve', color: 'from-green-50 to-green-50' },
+  { status: 'PENDING', title: 'New Orders' },
+  { status: 'COOKING', title: 'Preparation' },
+  { status: 'READY', title: 'Ready to Serve' },
 ];
 
 export const KitchenDashboard: React.FC = () => {
@@ -42,7 +41,7 @@ export const KitchenDashboard: React.FC = () => {
   useEffect(() => {
     fetchOrders();
     const intervalId = setInterval(fetchOrders, API_CONFIG.POLL_INTERVAL);
-    
+
     return () => clearInterval(intervalId);
   }, []);
 
@@ -87,41 +86,36 @@ export const KitchenDashboard: React.FC = () => {
     orders.filter(o => o.status === status);
 
   const servedOrders = getOrdersByStatus('SERVED');
-  const activeOrdersCount = orders.length - servedOrders.length;
 
   const Column: React.FC<{ col: StatusColumn }> = ({ col }) => {
     const columnOrders = getOrdersByStatus(col.status);
     const count = columnOrders.length;
 
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full bg-brand-surface rounded-xl border border-brand-border/50 overflow-hidden shadow-soft">
         {/* Column Header */}
-        <div className="mb-4 px-2">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-bold text-gray-800">{col.title}</h2>
-            <span className="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full font-bold">
+        <div className="p-4 border-b border-brand-border bg-brand-surface">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-brand-muted">{col.title}</h2>
+            <span className={`text-xs font-bold px-2 py-0.5 rounded border ${count > 0 ? 'bg-brand-primary text-white border-brand-primary' : 'bg-brand-background text-brand-muted border-brand-border'}`}>
               {count}
             </span>
           </div>
-          <div className="h-1 bg-gradient-to-r from-current to-transparent opacity-20"></div>
         </div>
 
         {/* Column Body */}
-        <div className={`flex-1 bg-gradient-to-b ${col.color} rounded-xl p-3 overflow-y-auto custom-scrollbar border border-gray-200 shadow-sm`}>
+        <div className="flex-1 p-3 overflow-y-auto custom-scrollbar bg-brand-background/30">
           {loading && orders.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400 mx-auto mb-2"></div>
-                <p className="text-xs text-gray-400">Loading...</p>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-muted mx-auto mb-2"></div>
+                <p className="text-xs text-brand-muted uppercase tracking-wide">Loading...</p>
               </div>
             </div>
           ) : columnOrders.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-gray-300">
+            <div className="h-full flex items-center justify-center text-brand-muted/30">
               <div className="text-center">
-                <svg className="w-12 h-12 mx-auto mb-2 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                </svg>
-                <p className="text-xs font-medium">No {col.title.toLowerCase()}</p>
+                <p className="text-xs font-medium uppercase tracking-widest">No orders</p>
               </div>
             </div>
           ) : (
@@ -142,95 +136,60 @@ export const KitchenDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 font-sans">
+    <div className="min-h-screen bg-brand-background p-4 md:p-8 font-sans">
       {/* Header */}
-      <header className="mb-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-brand-primary to-green-700 rounded-xl flex items-center justify-center shadow-lg">
-              <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">Kitchen Monitor</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Live Feed</p>
-              </div>
+      <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-brand-border pb-6">
+        <div className="flex items-start gap-4">
+          <div className="bg-brand-primary text-white p-3 rounded-lg shadow-sm">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <div>
+            <h1 className="text-3xl font-serif font-bold text-brand-text leading-none mb-1">Kitchen Display System</h1>
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+              <p className="text-xs text-brand-muted uppercase tracking-widest font-medium">System Online</p>
             </div>
           </div>
-
-            <div className="flex flex-col md:items-end">
-              <div className="flex items-center gap-3">
-                <button 
-                  onClick={fetchOrders}
-                  disabled={loading}
-                  className="p-2 text-gray-400 hover:text-brand-primary transition-colors disabled:opacity-50"
-                  title="Refresh Orders"
-                >
-                  <svg className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </button>
-                <div className="text-3xl font-bold text-gray-800 tabular-nums">
-                  {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
-              </div>
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Last Updated</p>
-            </div>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 5v14a2 2 0 01-2 2H4a2 2 0 01-2-2V5a1 1 0 011-1h2a1 1 0 00-.894.553H7a9 9 0 018 0h.894A1 1 0 0117 4h2a1 1 0 011 1zm-5-1H7v1h6V4z" clipRule="evenodd" />
-            </svg>
-            <div>
-                <p className="text-sm font-medium text-red-800">{error}</p>
-                <p className="text-xs text-red-600 mt-1">Check if n8n webhook is running at {API_ENDPOINTS.GET_ORDERS}</p>
-              </div>
+        <div className="flex items-center gap-6">
+          <div className="text-right">
+            <p className="text-2xl font-bold text-brand-text font-mono tracking-tight">
+              {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </p>
+            <button
+              onClick={fetchOrders}
+              disabled={loading}
+              className="text-xs text-brand-muted hover:text-brand-primary uppercase tracking-widest font-bold transition-colors flex items-center gap-1 justify-end ml-auto"
+            >
+              {loading ? 'Syncing...' : 'Sync Now'}
+              <svg className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
           </div>
-        )}
+        </div>
       </header>
 
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg flex items-center gap-3">
+          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+          <div>
+            <p className="text-sm font-bold text-red-900">Connection Error</p>
+            <p className="text-xs text-red-600 font-mono mt-0.5">{error} - Check API Endpoints</p>
+          </div>
+        </div>
+      )}
+
       {/* Main Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
         {STATUS_COLUMNS.map(col => (
           <Column key={col.status} col={col} />
         ))}
       </div>
-
-      {/* Recently Served Section */}
-      {servedOrders.length > 0 && (
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h2 className="text-xl font-bold text-gray-700">Recently Served</h2>
-            </div>
-            <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full font-bold">
-              {servedOrders.length}
-            </span>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 opacity-75">
-            {servedOrders.slice(0, 8).map(order => (
-              <KitchenOrderCard
-                key={order.order_id}
-                order={order}
-                onStatusUpdate={handleStatusUpdate}
-                isUpdating={updatingIds.has(order.order_id)}
-              />
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 };
